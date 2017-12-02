@@ -58,6 +58,7 @@ class GuzzleTest extends TestCase
     {
         return [
             ["getaccount"],
+            ['getaccountaddress'],
             ["getaddress"],
             ["getbalance"],
             ["getnewaddress"],
