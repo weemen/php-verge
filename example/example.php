@@ -32,7 +32,7 @@ $adapter = new Guzzle(
 );
 
 $client = new Client($adapter);
-$client->list_accounts();
+$client->listAccounts();
 
 
 /*
