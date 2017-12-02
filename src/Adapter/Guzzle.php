@@ -96,17 +96,17 @@ class Guzzle implements AdapterInterface
         try {
             $response = $this->client->request('POST', $this->uri, $this->buildRequest($method, $request));
         } catch (ConnectException $e) {
-            throw new ConnectionExcpetion(
-                sprintf('Cannot connect to: %s because of %s', $this->uri, $e->getMessage())
-            );
+            $log = sprintf('Cannot connect to: %s because of %s', $this->uri, $e->getMessage());
+            $this->logger->error($log);
+            throw new ConnectionExcpetion($log);
         } catch (ClientException $e) {
-            throw new ResponseException(
-                sprintf(
-                    'There was an error in processing your request: %s with status code %s',
-                    json_encode($request),
-                    $e->getMessage()
-                )
+            $log = sprintf(
+                'There was an error in processing your request: %s with status code %s',
+                json_encode($request),
+                $e->getMessage()
             );
+            $this->logger->error($log);
+            throw new ResponseException($log);
         }
 
         $this->logger->debug(
