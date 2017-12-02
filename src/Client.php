@@ -1,38 +1,25 @@
 <?php
 
-/**
- * Project : php-verge library
- * Summary : A basic php library to talk with VERGEd 
- *
- * Source  : forked from https://github.com/doged/php-doged
- *
- * Author  : VERGE
- * License : GPL vv
- */ 
+declare(strict_types=1);
 
-require_once dirname(  __FILE__ ) . '/jsonRPCClient.php';
+namespace VergeCurrency\VergeClient;
 
-class Verge  {
+use VergeCurrency\VergeClient\Adapter\AdapterInterface;
 
-    private $client;
+class Client
+{
 
-    /** 
+    private $adapter;
+
+    /**
      * Create client to conncet on init
-     * @param $config array of parameters $host, $port, $user, $pass
+     * @param array            $config
+     * @param AdapterInterface $adapter
      */
-
-    function __construct( $config ) {
-        
-        $connect_string = sprintf( 'http://%s:%s@%s:%s/', 
-            $config['user'],
-            $config['pass'],
-            $config['host'],
-            $config['port'] );
-
-        // internal client to use for connection
-        $this->client = new jsonRPCClient( $connect_string );
+    public function __construct(AdapterInterface $adapter)
+    {
+        $this->adapter = $adapter;
     }
-
 
     /**
      * Creates or Retrieves a VERGE address for a account name
@@ -40,10 +27,11 @@ class Verge  {
      * A VERGE address is returned which can receive coins
      *
      * @param string $account some string used as key to account
-     * @return string VERGE address 
+     * @return string VERGE address
      */
-    function get_address( $account ) {
-        return $this->client->getaccountaddress( $account );
+    public function getAddress(string $account)
+    {
+        return $this->adapter->getaccountaddress($account);
     }
 
 
@@ -53,8 +41,9 @@ class Verge  {
      * @param string $address VERGE addresss
      * @return string account name key
      */
-    function get_account( $address ) {
-        return $this->client->getaccount( $address );
+    public function getAccount(string $address)
+    {
+        return $this->adapter->getaccount($address);
     }
 
 
@@ -65,8 +54,9 @@ class Verge  {
      * @param string $account account name
      * @return string verge address
      */
-    function get_new_address( $account='' ) {
-        return $this->client->getnewaddress( $account );
+    public function getNewAddress(string $account = '')
+    {
+        return $this->adapter->getnewaddress($account);
     }
 
 
@@ -75,8 +65,9 @@ class Verge  {
      *
      * @return array strings of account => balance
      */
-    function list_accounts() {
-        return $this->client->listaccounts();
+    public function listAccounts()
+    {
+        return $this->adapter->listaccounts();
     }
 
     /**
@@ -85,8 +76,9 @@ class Verge  {
      * @param string $txid transaction id
      * @return array describing the transaction
      */
-    function get_transaction( $txid ) {
-        return $this->client->gettransaction( $txid );
+    public function getTransaction(string $txid)
+    {
+        return $this->adapter->gettransaction($txid);
     }
 
     /**
@@ -95,8 +87,9 @@ class Verge  {
      * @param string $address verge address
      * @param string $account account string
      */
-    function set_account( $address, $account ) {
-        return $this->client->setaccount($address, $account);
+    public function setAccount(string $address, string $account)
+    {
+        return $this->adapter->setaccount($address, $account);
     }
 
 
@@ -106,8 +99,9 @@ class Verge  {
      * @param string $account account name
      * @return float account balance
      */
-    function get_balance( $account, $minconf=1 ) {
-        return $this->client->getbalance( $account, $minconf );
+    public function getBalance(string $account, float $minconf = 1.0)
+    {
+        return $this->adapter->getbalance($account, $minconf);
     }
 
 
@@ -120,8 +114,9 @@ class Verge  {
      * @param float $amount amount of coins to move
      * @return
      */
-    function move( $account_from, $account_to, $amount ) {
-        return $this->client->move( $account_from, $account_to, $amount );
+    public function move(string $account_from, string $account_to, float $amount)
+    {
+        return $this->adapter->move($account_from, $account_to, $amount);
     }
 
 
@@ -133,18 +128,19 @@ class Verge  {
      * @param float $amount amount of coins to send
      * @return string txid
      */
-    function send( $account, $to_address, $amount ) {
-        $txid = $this->client->sendfrom( $account, $to_address, $amount );  
+    public function send(string $account, string $to_address, float $amount)
+    {
+        $txid = $this->adapter->sendfrom($account, $to_address, $amount);
         return $txid;
     }
 
-	/**
-	 * Validate a given VERGE Address
-	 * @param string $address to validate
-	 * @return array with the properties of the address
-	 */
-	function validate_address( $address ) {
-		return $this->client->validateaddress($address);
-	}
+    /**
+     * Validate a given VERGE Address
+     * @param string $address to validate
+     * @return array with the properties of the address
+     */
+    public function validateAddress(string $address)
+    {
+        return $this->adapter->validateaddress($address);
+    }
 }
-
