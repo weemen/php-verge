@@ -44,15 +44,16 @@ class Guzzle implements AdapterInterface
      * @var array
      */
     private $validMethods = [
-        'getaddress',
         'getaccount',
-        'getnewaddress',
-        'listaccounts',
-        'gettransaction',
-        'setaccount',
+        'getaccountaddress',
+        'getaddress',
         'getbalance',
+        'getnewaddress',
+        'gettransaction',
+        'listaccounts',
         'move',
         'send',
+        'setaccount',
         'validateaddress'
     ];
 
