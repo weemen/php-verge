@@ -7,6 +7,7 @@ namespace VergeCurrency\VergeClient\Adapter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 use VergeCurrency\VergeClient\Exception\ConnectionExcpetion;
 use VergeCurrency\VergeClient\Exception\ResponseException;
@@ -100,6 +101,14 @@ class Guzzle implements AdapterInterface
             $this->logger->error($log);
             throw new ConnectionExcpetion($log);
         } catch (ClientException $e) {
+            $log = sprintf(
+                'There was an error in processing your request: %s with status code %s',
+                json_encode($request),
+                $e->getMessage()
+            );
+            $this->logger->error($log);
+            throw new ResponseException($log);
+        } catch (ServerException $e) {
             $log = sprintf(
                 'There was an error in processing your request: %s with status code %s',
                 json_encode($request),
