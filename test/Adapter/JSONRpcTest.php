@@ -11,7 +11,6 @@ use VergeCurrency\VergeClient\Exception\RuntimeException;
 
 class JSONRpcTest extends TestCase
 {
-    use PHPMock;
     /**
      * @test
      * @dataProvider methodProvider
