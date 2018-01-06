@@ -95,7 +95,7 @@ class Guzzle implements AdapterInterface
         $request = $this->buildRequest($method, $arguments);
 
         try {
-            $response = $this->client->request('POST', $this->uri, $this->buildRequest($method, $request));
+            $response = $this->client->request('POST', $this->uri, $request);
         } catch (ConnectException $e) {
             $log = sprintf('Cannot connect to: %s because of %s', $this->uri, $e->getMessage());
             $this->logger->error($log);
@@ -139,9 +139,9 @@ class Guzzle implements AdapterInterface
     private function buildRequest(string $method, array $arguments): array
     {
         $request = [
-            'json'  => [
+            [
                 'method' => $method,
-                'Params' => $arguments,
+                'params' => $arguments,
                 'id'     => $this->userId
             ],
             'headers' => [
