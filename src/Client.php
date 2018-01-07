@@ -96,6 +96,16 @@ class Client
      */
     public function setAccount(string $address, string $account)
     {
+        if (false === $this->isValidVergeAddress($address)) {
+            throw new InvalidVergeAccountException(
+                'Cannot associate address to account: '.$address.' is not a valid verge address!'
+            );
+        }
+
+        if (false === $this->isValidVergeAccount($account)) {
+            throw new InvalidVergeAccountException('Cannot associate address to account, account: '.$account.' does not exist');
+        }
+
         return $this->adapter->setaccount($address, $account);
     }
 

@@ -13,6 +13,50 @@ class ClientTest extends TestCase
     /**
      * @test
      */
+    public function ItCanNotAccociateAddressToAccountWithInvalidAddress()
+    {
+        $adapterInterface = $this->getMockBuilder(AdapterInterface::class)
+            ->setMethods(['validateAddress'])
+            ->getMock();
+
+        $adapterInterface->expects($this->once())
+            ->method('validateAddress')
+            ->will($this->returnValue(['isvalid' => null]));
+
+        $client = new Client($adapterInterface);
+        $this->expectException(InvalidVergeAccountException::class);
+        $this->expectExceptionMessage('Cannot associate address to account: some_address is not a valid verge address!');
+
+        $client->setAccount('some_address', 'some_account');
+    }
+
+    /**
+     * @test
+     */
+    public function ItCanNotAccociateAddressToAccountWithInvalidAccount()
+    {
+        $adapterInterface = $this->getMockBuilder(AdapterInterface::class)
+            ->setMethods(['validateAddress','listaccounts'])
+            ->getMock();
+
+        $adapterInterface->expects($this->once())
+            ->method('validateAddress')
+            ->will($this->returnValue(['isvalid' => true]));
+
+        $adapterInterface->expects($this->once())
+            ->method('listaccounts')
+            ->will($this->returnValue([]));
+
+        $client = new Client($adapterInterface);
+        $this->expectException(InvalidVergeAccountException::class);
+        $this->expectExceptionMessage('Cannot associate address to account, account: some_account does not exist');
+
+        $client->setAccount('some_address', 'some_account');
+    }
+
+    /**
+     * @test
+     */
     public function ItCanNotLookUpAccountNamesFromInvalidVergeAddresses()
     {
         $adapterInterface = $this->getMockBuilder(AdapterInterface::class)
