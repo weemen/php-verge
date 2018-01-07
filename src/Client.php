@@ -108,7 +108,7 @@ class Client
      */
     public function getBalance(string $source_account, float $minconf = 1.0)
     {
-        if (false === array_key_exists($source_account, $this->adapter->listaccounts())) {
+        if (false === $this->isValidVergeAccount($source_account)) {
             throw new InvalidVergeAccountException('Source account: '.$source_account.' does not exist');
         }
 
@@ -127,11 +127,11 @@ class Client
      */
     public function move(string $source_account, string $destination_account, float $amount)
     {
-        if (false === array_key_exists($source_account, $this->adapter->listaccounts())) {
+        if (false === $this->isValidVergeAccount($source_account)) {
             throw new InvalidVergeAccountException("Source account: ".$source_account." does not exist");
         }
 
-        if (false === array_key_exists($destination_account, $this->adapter->listaccounts())) {
+        if (false === $this->isValidVergeAccount($destination_account)) {
             throw new InvalidVergeAccountException("Destination account: ".$destination_account." does not exist");
         }
 
@@ -149,7 +149,7 @@ class Client
      */
     public function send(string $source_account, string $destination_address, float $amount)
     {
-        if (false === array_key_exists($source_account, $this->adapter->listaccounts())) {
+        if (false === $this->isValidVergeAccount($source_account)) {
             throw new InvalidVergeAccountException('Source account: '.$source_account.' does not exist');
         }
 
@@ -174,12 +174,20 @@ class Client
     }
 
     /**
+     * @param string $account
+     */
+    private function isValidVergeAccount(string $account)
+    {
+        return (array_key_exists($account, $this->adapter->listaccounts()));
+    }
+
+    /**
      * validate verge address
      * @param string $address
      *
      * @return bool
      */
-    private function isValidVergeAddress($address)
+    private function isValidVergeAddress(string $address)
     {
         $validation = $this->validateAddress($address);
         return ($validation['isvalid']) ? true : false;
