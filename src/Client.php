@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VergeCurrency\VergeClient;
 
 use VergeCurrency\VergeClient\Adapter\AdapterInterface;
+use VergeCurrency\VergeClient\Exception\InvalidVergeAccountException;
 
 class Client
 {
@@ -109,28 +110,48 @@ class Client
      * Move coins from one account on wallet to another
      * Both accounts are local to this verged instance
      *
-     * @param string $account_from account moving from
-     * @param string $account_to account moving to
+     * @param string $source_account account moving from
+     * @param string $destination_account account moving to
      * @param float $amount amount of coins to move
      * @return
      */
-    public function move(string $account_from, string $account_to, float $amount)
+    public function move(string $source_account, string $destination_account, float $amount)
     {
-        return $this->adapter->move($account_from, $account_to, $amount);
+        if (false === array_key_exists($source_account, $this->adapter->listaccounts())) {
+            throw new InvalidVergeAccountException("Source account: ".$source_account." does not exist");
+        }
+
+        if (false === array_key_exists($destination_account, $this->adapter->listaccounts())) {
+            throw new InvalidVergeAccountException("Destination account: ".$destination_account." does not exist");
+        }
+
+        return $this->adapter->move($source_account, $destination_account, $amount);
     }
 
 
     /**
      * Send coins to any VERGE Address
      *
-     * @param string $account account sending coins from
-     * @param string $to_address VERGE address sending to
+     * @param string $source_account account sending coins from
+     * @param string $destination_address VERGE address sending to
      * @param float $amount amount of coins to send
      * @return string txid
      */
-    public function send(string $account, string $to_address, float $amount)
+    public function send(string $source_account, string $destination_address, float $amount)
     {
-        $txid = $this->adapter->sendfrom($account, $to_address, $amount);
+        if (false === array_key_exists($source_account, $this->adapter->listaccounts())) {
+            throw new InvalidVergeAccountException('Source account: '.$source_account.' does not exist');
+        }
+
+        $validation = $this->validateAddress($destination_address);
+
+        if ($validation['isvalid'] !== 1) {
+            throw new InvalidVergeAccountException(
+                'Destination address: '.$destination_address.' is not a valid verge address!'
+            );
+        }
+
+        $txid = $this->adapter->sendfrom($source_account, $destination_address, $amount);
         return $txid;
     }
 

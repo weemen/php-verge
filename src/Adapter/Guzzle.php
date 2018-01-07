@@ -139,7 +139,7 @@ class Guzzle implements AdapterInterface
     private function buildRequest(string $method, array $arguments): array
     {
         $request = [
-            [
+            'json' => [
                 'method' => $method,
                 'params' => $arguments,
                 'id'     => $this->userId
