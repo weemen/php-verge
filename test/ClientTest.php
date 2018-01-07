@@ -13,6 +13,30 @@ class ClientTest extends TestCase
     /**
      * @test
      */
+    public function ItCanNotRequestBalanceOfNonExistingAccounts()
+    {
+        $adapterInterface = $this->getMockBuilder(AdapterInterface::class)
+            ->setMethods(['listaccounts','getbalance'])
+            ->getMock();
+
+        $adapterInterface->expects($this->once())
+            ->method('listaccounts')
+            ->will($this->returnValue([]));
+
+        $adapterInterface->expects($this->never())
+            ->method('getbalance')
+            ->will($this->returnValue([]));
+
+        $client = new Client($adapterInterface);
+        $this->expectException(InvalidVergeAccountException::class);
+        $this->expectExceptionMessage("Source account: some_source_account does not exist");
+
+        $client->getBalance('some_source_account', 1.0);
+    }
+
+    /**
+     * @test
+     */
     public function ItCanNotMoveVergeFromNonExistingSourceAccount()
     {
         $adapterInterface = $this->getMockBuilder(AdapterInterface::class)

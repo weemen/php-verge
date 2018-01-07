@@ -100,9 +100,13 @@ class Client
      * @param string $account account name
      * @return float account balance
      */
-    public function getBalance(string $account, float $minconf = 1.0)
+    public function getBalance(string $source_account, float $minconf = 1.0)
     {
-        return $this->adapter->getbalance($account, $minconf);
+        if (false === array_key_exists($source_account, $this->adapter->listaccounts())) {
+            throw new InvalidVergeAccountException('Source account: '.$source_account.' does not exist');
+        }
+
+        return $this->adapter->getbalance($source_account, $minconf);
     }
 
 
