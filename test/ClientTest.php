@@ -13,6 +13,29 @@ class ClientTest extends TestCase
     /**
      * @test
      */
+    public function ItCanNotLookUpAccountNamesFromInvalidVergeAddresses()
+    {
+        $adapterInterface = $this->getMockBuilder(AdapterInterface::class)
+            ->setMethods(['validateAddress','getaccount'])
+            ->getMock();
+
+        $adapterInterface->expects($this->once())
+            ->method('validateAddress')
+            ->will($this->returnValue(['isvalid' => null]));
+
+        $adapterInterface->expects($this->never())
+            ->method('getaccount');
+
+        $client = new Client($adapterInterface);
+        $this->expectException(InvalidVergeAccountException::class);
+        $this->expectExceptionMessage('Address: some_source_account is not a valid verge address!');
+
+        $client->getAccount('some_source_account');
+    }
+
+    /**
+     * @test
+     */
     public function ItCanNotRequestBalanceOfNonExistingAccounts()
     {
         $adapterInterface = $this->getMockBuilder(AdapterInterface::class)

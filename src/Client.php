@@ -44,6 +44,14 @@ class Client
      */
     public function getAccount(string $address)
     {
+        $validation = $this->validateAddress($address);
+
+        if ($validation['isvalid'] !== 1) {
+            throw new InvalidVergeAccountException(
+                'Address: '.$address.' is not a valid verge address!'
+            );
+        }
+
         return $this->adapter->getaccount($address);
     }
 
