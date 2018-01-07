@@ -44,9 +44,7 @@ class Client
      */
     public function getAccount(string $address)
     {
-        $validation = $this->validateAddress($address);
-
-        if ($validation['isvalid'] !== 1) {
+        if (false === $this->isValidVergeAddress($address)) {
             throw new InvalidVergeAccountException(
                 'Address: '.$address.' is not a valid verge address!'
             );
@@ -155,9 +153,7 @@ class Client
             throw new InvalidVergeAccountException('Source account: '.$source_account.' does not exist');
         }
 
-        $validation = $this->validateAddress($destination_address);
-
-        if ($validation['isvalid'] !== 1) {
+        if (false === $this->isValidVergeAddress($destination_address)) {
             throw new InvalidVergeAccountException(
                 'Destination address: '.$destination_address.' is not a valid verge address!'
             );
@@ -175,5 +171,17 @@ class Client
     public function validateAddress(string $address)
     {
         return $this->adapter->validateaddress($address);
+    }
+
+    /**
+     * validate verge address
+     * @param string $address
+     *
+     * @return bool
+     */
+    private function isValidVergeAddress($address)
+    {
+        $validation = $this->validateAddress($address);
+        return ($validation['isvalid']) ? true : false;
     }
 }
